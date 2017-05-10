@@ -59,11 +59,9 @@ Game.prototype.changeTurn = function() {
 }
 
 Game.prototype.findCell = function(id) {
-  for (var i = 0; i < this.cells.length; i++) {
-    if (this.cells[i].id === id) {
-      return this.cells[i];
-    }
-  }
+  return this.cells.find(function(element) {
+    return element.id === id;
+  });
 };
 
 Game.prototype.emphasizeWinners = function(array) {
@@ -72,12 +70,32 @@ Game.prototype.emphasizeWinners = function(array) {
   }
   this.complete = true;
 }
+
+Game.prototype.roboMove = function () {
+  var moved = false;
+  while (!moved) {
+    var index = Math.floor(Math.random() * 9);
+    if (!this.cells[index].state) {
+      moved = true;
+      return this.cells[index];
+    }
+  }
+};
 //NOTE: Alternate method of adding Cells to Board:
 // for (var i = 1; i < 4; i++) {
 //   for (var ii = 1; ii < 4; ii++) {
 //     ourBoard.cells.push(new Cell(i.toString() + ii.toString()))
 //   }
 // }
+
+Game.prototype.freeCells = function () {
+  for (var i = 0; i < this.cells.length; i++) {
+    if (!this.cells[i].state) {
+      return true;
+    }
+  }
+  return false;
+};
 
 function Cell(id) {
   this.id     = id;
@@ -90,14 +108,6 @@ function Cell(id) {
 Cell.prototype.update = function (symbol) {
   this.state  = true;
   this.symbol = symbol;
-};
-
-function Robot (player) {
-  this.player = player;
-}
-
-Robot.prototype.move = function () {
-
 };
 
 ///////// User interface
@@ -126,7 +136,11 @@ $(function () {
     ourGame.players.push(playerOne);
     ourGame.players.push(playerTwo);
     ourGame.ai = true;
-    ourGame.aiPlayer = new Robot(playerTwo);
+
+    $("form").hide();
+    //TODO: Randomize which player goes first
+    alert(playerOne.name + ", you're going first!");
+    ourGame.currentPlayer = playerOne;
   });
 
   $("td").click(function() {
@@ -137,11 +151,12 @@ $(function () {
         $(this).text(ourGame.currentPlayer.symbol);
       }
       ourGame.checkForWin(ourGame.currentPlayer.symbol);
-      if (ourGame.ai[0]) {
-
-        }
-        //computer player makes a move and returns currentPlayer to human
-      } else {
+      ourGame.changeTurn();
+      if (ourGame.ai && !ourGame.complete && ourGame.freeCells()) {
+        var roboCell = ourGame.roboMove();
+        roboCell.update(ourGame.currentPlayer.symbol);
+        $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
+        ourGame.checkForWin(ourGame.currentPlayer.symbol);
         ourGame.changeTurn();
       }
     } else {
