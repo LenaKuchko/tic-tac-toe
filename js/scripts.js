@@ -10,6 +10,8 @@ function Game() {
   this.currentPlayer = {};
   this.complete      = false;
   this.ai            = false;
+  //NOTE: Could this initial value mess us up if the computer moves first?
+  this.lastMove      = 0;
 }
 
 
@@ -72,14 +74,9 @@ Game.prototype.emphasizeWinners = function(array) {
 }
 
 Game.prototype.roboMove = function () {
-  var moved = false;
-  while (!moved) {
-    var index = Math.floor(Math.random() * 9);
-    if (!this.cells[index].state) {
-      moved = true;
-      return this.cells[index];
-    }
-  }
+  var index = Math.floor(Math.random() * (this.freeCells().freeCellArray.length - 1));
+  console.log(this.freeCells().freeCellArray[index]);
+  return this.freeCells().freeCellArray[index];
 };
 //NOTE: Alternate method of adding Cells to Board:
 // for (var i = 1; i < 4; i++) {
@@ -88,13 +85,60 @@ Game.prototype.roboMove = function () {
 //   }
 // }
 
+Game.prototype.roboMoveSmarter = function () {
+  var possibleMoves = [];
+// Win: If the player has two in a row, they can place a third to get three in a row.
+
+// Block: If the opponent has two in a row, the player must play the third themselves to block the opponent.
+
+// Fork: Create an opportunity where the player has two threats to win (two non-blocked lines of 2).
+
+// Blocking an opponent's fork:
+// Option 1: The player should create two in a row to force the opponent into defending, as long as it doesn't result in them creating a fork. For example, if "X" has a corner, "O" has the center, and "X" has the opposite corner as well, "O" must not play a corner in order to win. (Playing a corner in this scenario creates a fork for "X" to win.)
+
+// Option 2: If there is a configuration where the opponent can fork, the player should block that fork.
+
+// Center: A player marks the center. (If it is the first move of the game, playing on a corner gives "O" more opportunities to make a mistake and may therefore be the better choice; however, it makes no difference between perfect players.)
+  // if (!this.cells[4].state) {
+  //   possibleMoves = [4];
+  // }
+// Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
+
+// Empty corner: The player plays in a corner square. [0,2,4,8]
+  // possibleMoves = intersection_destructive(this.freeCells().freeCellArray, [0,2,6,8]);
+// Empty side: The player plays in a middle square on any of the 4 sides. [1,3,5,7]
+  // possibleMoves = intersection_destructive(this.freeCells().freeCellArray, [1,3,5,7]);
+
+  //Robot randomizes among possibleMoves and chooses a valid id to move into;
+  console.log(possibleMoves);
+  var moveIndex = Math.floor(Math.random() * (possibleMoves.length - 1));
+  return possibleMoves[moveIndex];
+}
+
+//NOTE: http://stackoverflow.com/questions/1885557/simplest-code-for-array-intersection-in-javascript
+function intersection_destructive(a, b) {
+  var result = [];
+  while( a.length > 0 && b.length > 0 ) {
+     if      (a[0] < b[0] ){ a.shift(); }
+     else if (a[0] > b[0] ){ b.shift(); }
+     else /* they're equal */
+     {
+       result.push(a.shift());
+       b.shift();
+     }
+  }
+  return result;
+}
+
 Game.prototype.freeCells = function () {
+  var result = {"state": false, "freeCellArray": []};
   for (var i = 0; i < this.cells.length; i++) {
     if (!this.cells[i].state) {
-      return true;
+      result.state = true;
+      result.freeCellArray.push(i)
     }
   }
-  return false;
+  return result;
 };
 
 function Cell(id) {
@@ -161,14 +205,20 @@ $(function () {
       var currentCell = ourGame.findCell($(this)[0].id);
       if (!currentCell.state) {
         currentCell.update(ourGame.currentPlayer.symbol);
+        ourGame.lastMove = currentCell.id;
         $(this).text(ourGame.currentPlayer.symbol);
       }
       ourGame.checkForWin(ourGame.currentPlayer.symbol);
       ourGame.changeTurn();
       //TODO: DRY this, maybe?
-      if (ourGame.ai && !ourGame.complete && ourGame.freeCells()) {
-        var roboCell = ourGame.roboMove();
+      if (ourGame.ai && !ourGame.complete && ourGame.freeCells().state) {
+        if (ourGame.players[1].name === "WALL-E") {
+          var roboCell = ourGame.cells[ourGame.roboMove()];
+        } else if (ourGame.players[1].name === "HAL 9000") {
+          var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
+        }
         roboCell.update(ourGame.currentPlayer.symbol);
+        ourGame.lastMove = roboCell.id;
         $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
         ourGame.checkForWin(ourGame.currentPlayer.symbol);
         ourGame.changeTurn();
