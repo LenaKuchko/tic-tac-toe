@@ -9,7 +9,9 @@ function Game() {
   this.players       = [];
   this.currentPlayer = {};
   this.complete      = false;
+  this.ai            = false;
 }
+
 
 Game.prototype.checkForWin = function (symbol) {
   //Checks for horizontal win:
@@ -90,6 +92,14 @@ Cell.prototype.update = function (symbol) {
   this.symbol = symbol;
 };
 
+function Robot (player) {
+  this.player = player;
+}
+
+Robot.prototype.move = function () {
+
+};
+
 ///////// User interface
 $(function () {
   var ourGame = new Game();
@@ -98,14 +108,25 @@ $(function () {
   $("form").submit(function(event) {
     event.preventDefault();
 
+    //NOTE: I think the next seven lines should probably become part of a gameInit function.
     var playerOne = new Player($("input[name=player1]").val(), $("input[name=player1-symbol]").val());
     var playerTwo = new Player($("input[name=player2]").val(), $("input[name=player2-symbol]").val());
     ourGame.players.push(playerOne);
     ourGame.players.push(playerTwo);
 
     $("form").hide();
+    //TODO: Randomize which player goes first
     alert(playerOne.name + ", you're going first!");
     ourGame.currentPlayer = playerOne;
+  });
+
+  $("button[name=vs-computer]").click(function() {
+    var playerOne = new Player($("input[name=player1]").val(), $("input[name=player1-symbol]").val());
+    var playerTwo = new Player("WALL-E", "[0_0]");
+    ourGame.players.push(playerOne);
+    ourGame.players.push(playerTwo);
+    ourGame.ai = true;
+    ourGame.aiPlayer = new Robot(playerTwo);
   });
 
   $("td").click(function() {
@@ -116,7 +137,13 @@ $(function () {
         $(this).text(ourGame.currentPlayer.symbol);
       }
       ourGame.checkForWin(ourGame.currentPlayer.symbol);
-      ourGame.changeTurn();
+      if (ourGame.ai[0]) {
+
+        }
+        //computer player makes a move and returns currentPlayer to human
+      } else {
+        ourGame.changeTurn();
+      }
     } else {
       console.log("Game Over or Too Few Players.");
     }
