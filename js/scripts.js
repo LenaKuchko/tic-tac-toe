@@ -87,6 +87,7 @@ Game.prototype.roboMove = function () {
 
 Game.prototype.roboMoveSmarter = function () {
   var possibleMoves = [];
+  var frees = this.freeCells().freeCellArray;
 // Win: If the player has two in a row, they can place a third to get three in a row.
 
 // Block: If the opponent has two in a row, the player must play the third themselves to block the opponent.
@@ -99,15 +100,23 @@ Game.prototype.roboMoveSmarter = function () {
 // Option 2: If there is a configuration where the opponent can fork, the player should block that fork.
 
 // Center: A player marks the center. (If it is the first move of the game, playing on a corner gives "O" more opportunities to make a mistake and may therefore be the better choice; however, it makes no difference between perfect players.)
-  // if (!this.cells[4].state) {
-  //   possibleMoves = [4];
-  // }
+  if (!this.cells[4].state) {
+    possibleMoves = [4];
 // Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
-
+  } else if (this.lastMove === "0" || this.lastMove === "8") {
+    possibleMoves = this.intersection([0, 8]);
+  } else if (this.lastMove === "2" || this.lastMove === "6") {
+    possibleMoves = this.intersection([2, 6]);
 // Empty corner: The player plays in a corner square. [0,2,4,8]
-  // possibleMoves = intersection_destructive(this.freeCells().freeCellArray, [0,2,6,8]);
-// Empty side: The player plays in a middle square on any of the 4 sides. [1,3,5,7]
-  // possibleMoves = intersection_destructive(this.freeCells().freeCellArray, [1,3,5,7]);
+  } else if (frees.includes(0)
+          || frees.includes(2)
+          || frees.includes(4)
+          || frees.includes(8)) {
+    possibleMoves = this.intersection([0,2,6,8]);
+    // Empty side: The player plays in a middle square on any of the 4 sides. [1,3,5,7]
+  } else {
+    possibleMoves = this.intersection([1,3,5,7]);
+  }
 
   //Robot randomizes among possibleMoves and chooses a valid id to move into;
   console.log(possibleMoves);
@@ -116,14 +125,15 @@ Game.prototype.roboMoveSmarter = function () {
 }
 
 //NOTE: http://stackoverflow.com/questions/1885557/simplest-code-for-array-intersection-in-javascript
-function intersection_destructive(a, b) {
+Game.prototype.intersection = function(array) {
   var result = [];
-  while( a.length > 0 && b.length > 0 ) {
-     if      (a[0] < b[0] ){ a.shift(); }
-     else if (a[0] > b[0] ){ b.shift(); }
+  var b = this.freeCells().freeCellArray;
+  while( array.length > 0 && b.length > 0 ) {
+     if      (array[0] < b[0] ){ array.shift(); }
+     else if (array[0] > b[0] ){ b.shift(); }
      else /* they're equal */
      {
-       result.push(a.shift());
+       result.push(array.shift());
        b.shift();
      }
   }
