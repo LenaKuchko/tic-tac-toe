@@ -6,8 +6,9 @@ function Player(name, symbol) {
 }
 
 function Game() {
-  this.cells   = [];
-  this.players = [];
+  this.cells         = [];
+  this.players       = [];
+  this.currentPlayer = {};
 }
 
 Game.prototype.checkForWin = function () {
@@ -22,6 +23,16 @@ Game.prototype.generate = function () {
   });
 };
 
+Game.prototype.changeTurn = function() {
+  if (this.currentPlayer === this.players[1]) {
+    this.currentPlayer = this.players[0];
+  } else if (this.currentPlayer === this.players[0]) {
+    this.currentPlayer = this.players[1];
+  } else {
+    console.log("Whoops. This shouldn't ever run.");
+  }
+}
+
 //NOTE: Alternate method of adding Cells to Board:
 // for (var i = 1; i < 4; i++) {
 //   for (var ii = 1; ii < 4; ii++) {
@@ -30,16 +41,23 @@ Game.prototype.generate = function () {
 // }
 
 function Cell(id) {
-  this.id    = id;
-  this.x     = id[0];
-  this.y     = id[1];
-  this.state = "";
-
+  this.id     = id;
+  this.x      = id[0];
+  this.y      = id[1];
+  this.state  = false;
+  this.symbol = "";
 }
+
+Cell.prototype.update = function (symbol) {
+  this.state  = true;
+  this.symbol = symbol;
+};
+
 ///////// User interface
 $(function () {
   var ourGame = new Game();
   ourGame.generate();
+  console.log(ourGame === ourGame);
 
   $("form").submit(function(event) {
     event.preventDefault();
@@ -48,10 +66,20 @@ $(function () {
     var playerTwo = new Player($("input[name=player2]").val(), $("input[name=player2-symbol]").val());
     ourGame.players.push(playerOne);
     ourGame.players.push(playerTwo);
-    console.log(ourGame);
-  })
+
+    $("form").hide();
+    alert(playerOne.name + ", you're going first!");
+    ourGame.currentPlayer = playerOne;
+  });
 
   $("td").click(function() {
-    console.log($(this)[0].id);
+    var currentCell = ourGame.cells[1];
+    console.log(currentCell);
+    // if (!currentCell.state) {
+    //   //currentCell.update();
+    // }
+    $(this).text(ourGame.currentPlayer.symbol);
+
+    ourGame.changeTurn();
   });
 });
