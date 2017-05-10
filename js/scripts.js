@@ -12,6 +12,20 @@ Board.prototype.checkForWin = function () {
   this.cells;
 };
 
+Board.prototype.generate = function () {
+  var board = this;
+  $("td").each(function(idx, ele) {
+    var newCell = new Cell(ele.id);
+    board.cells.push(newCell);
+  });
+};
+
+//NOTE: Alternate method of adding Cells to Board:
+// for (var i = 1; i < 4; i++) {
+//   for (var ii = 1; ii < 4; ii++) {
+//     ourBoard.cells.push(new Cell(i.toString() + ii.toString()))
+//   }
+// }
 
 function Cell(id) {
   this.id    = id;
@@ -22,21 +36,9 @@ function Cell(id) {
 }
 ///////// User interface
 $(function () {
-  Board.prototype.generate = function () {
-    $("td").each(function(idx, ele) {
-      var newCell = new Cell(ele.id);
-      this.cells.push(newCell);
-    });
-  };
   var ourBoard = new Board();
   ourBoard.generate();
 
-  //NOTE: Alternate method of adding Cells to Board:
-  // for (var i = 1; i < 4; i++) {
-  //   for (var ii = 1; ii < 4; ii++) {
-  //     ourBoard.cells.push(new Cell(i.toString() + ii.toString()))
-  //   }
-  // }
 
 
 
