@@ -1,18 +1,20 @@
 /////////Business logic
-function Player(name) {
+function Player(name, symbol) {
   this.name      = name;
   this.winStatus = false;
+  this.symbol    = symbol;
 }
 
-function Board() {
-  this.cells = [];
+function Game() {
+  this.cells   = [];
+  this.players = [];
 }
 
-Board.prototype.checkForWin = function () {
+Game.prototype.checkForWin = function () {
   this.cells;
 };
 
-Board.prototype.generate = function () {
+Game.prototype.generate = function () {
   var board = this;
   $("td").each(function(idx, ele) {
     var newCell = new Cell(ele.id);
@@ -36,13 +38,18 @@ function Cell(id) {
 }
 ///////// User interface
 $(function () {
-  var ourBoard = new Board();
-  ourBoard.generate();
+  var ourGame = new Game();
+  ourGame.generate();
 
+  $("form").submit(function(event) {
+    event.preventDefault();
 
-
-
-  console.log(ourBoard);
+    var playerOne = new Player($("input[name=player1]").val(), $("input[name=player1-symbol]").val());
+    var playerTwo = new Player($("input[name=player2]").val(), $("input[name=player2-symbol]").val());
+    ourGame.players.push(playerOne);
+    ourGame.players.push(playerTwo);
+    console.log(ourGame);
+  })
 
   $("td").click(function() {
     console.log($(this)[0].id);
