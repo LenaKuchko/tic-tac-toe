@@ -33,6 +33,14 @@ Game.prototype.changeTurn = function() {
   }
 }
 
+Game.prototype.findCell = function (id) {
+  for (var i = 0; i < this.cells.length; i++) {
+    if (this.cells[i].id === id) {
+      return this.cells[i];
+    }
+  }
+};
+
 //NOTE: Alternate method of adding Cells to Board:
 // for (var i = 1; i < 4; i++) {
 //   for (var ii = 1; ii < 4; ii++) {
@@ -57,7 +65,6 @@ Cell.prototype.update = function (symbol) {
 $(function () {
   var ourGame = new Game();
   ourGame.generate();
-  console.log(ourGame === ourGame);
 
   $("form").submit(function(event) {
     event.preventDefault();
@@ -73,7 +80,7 @@ $(function () {
   });
 
   $("td").click(function() {
-    var currentCell = ourGame.cells[1];
+    var currentCell = ourGame.findCell($(this)[0].id);
     console.log(currentCell);
     // if (!currentCell.state) {
     //   //currentCell.update();
