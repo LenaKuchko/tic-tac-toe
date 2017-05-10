@@ -1,8 +1,9 @@
 td {
   text-align: center;
-  font-size: 150px;
-  height: 300px;
-  width: 300px;
+  font-size: 190px;
+  padding: 0px;
+  height: 280px;
+  width: 280px;
   border: 10px solid black;
 }
 

@@ -66,7 +66,7 @@ Game.prototype.findCell = function(id) {
 
 Game.prototype.emphasizeWinners = function(array) {
   for (var i = 0; i < array.length; i++) {
-    $("#" + this.cells[array[i]].id).addClass("winning");
+    $("#" + array[i]).addClass("winning");
   }
   this.complete = true;
 }
@@ -99,8 +99,8 @@ Game.prototype.freeCells = function () {
 
 function Cell(id) {
   this.id     = id;
-  this.x      = id[0];
-  this.y      = id[1];
+  // this.x      = id[0];
+  // this.y      = id[1];
   this.state  = false;
   this.symbol = "";
 }
@@ -143,6 +143,19 @@ $(function () {
     ourGame.currentPlayer = playerOne;
   });
 
+  $("button[name=vs-better-computer]").click(function() {
+    var playerOne = new Player($("input[name=player1]").val(), $("input[name=player1-symbol]").val());
+    var playerTwo = new Player("HAL 9000", "(O)");
+    ourGame.players.push(playerOne);
+    ourGame.players.push(playerTwo);
+    ourGame.ai = true;
+
+    $("form").hide();
+    //TODO: Randomize which player goes first
+    alert(playerOne.name + ", you're going first!");
+    ourGame.currentPlayer = playerOne;
+  });
+
   $("td").click(function() {
     if (!ourGame.complete && ourGame.players.length === 2) {
       var currentCell = ourGame.findCell($(this)[0].id);
@@ -152,6 +165,7 @@ $(function () {
       }
       ourGame.checkForWin(ourGame.currentPlayer.symbol);
       ourGame.changeTurn();
+      //TODO: DRY this, maybe?
       if (ourGame.ai && !ourGame.complete && ourGame.freeCells()) {
         var roboCell = ourGame.roboMove();
         roboCell.update(ourGame.currentPlayer.symbol);
