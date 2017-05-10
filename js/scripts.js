@@ -84,96 +84,80 @@ Game.prototype.roboMove = function () {
 //   }
 // }
 
-Game.prototype.roboMoveSmarter = function (symbol) {
+Game.prototype.roboMoveSmarter = function () {
   var possibleMoves = [];
   var frees = this.freeCells().freeCellArray;
-// Win: If the player has two in a row, they can place a third to get three in a row.
 
-// Block: If the opponent has two in a row, the player must play the third themselves to block the opponent.
-//Check horizontals:
-for (var i = 0; i <= 6; i+=3) {
-  var first  = this.cells[i].symbol;
-  var second = this.cells[i + 1].symbol;
-  var third  = this.cells[i + 2].symbol;
+  function checkforPair(a, b, c, symbol) {
+    var first  = this.cells[a].symbol;
+    var second = this.cells[b].symbol;
+    var third  = this.cells[c].symbol;
 
-  //NOTE: If this is the best way to do this I will eat my hat.
-  if ((first === second && (first === symbol || second === symbol))
-    || (second === third && (second === symbol || third === symbol)
-    || (third === first && (third === symbol || first === symbol))) {
-      if (Game.intersection([first, second, third]) !== []) {
-        possibleMoves = Game.intersection([first, second, third]);
+    //NOTE: If this is the best way to do this I will eat my hat.
+    if ((first === second && (first === symbol || second === symbol))
+      || (second === third && (second === symbol || third === symbol))
+      || (third === first && (third === symbol || first === symbol))) {
+        if (Game.intersection([first, second, third]) !== []) {
+          possibleMoves = Game.intersection([first, second, third]);
+        }
       }
-    }
-}
-
-//Check verticals:
-for (var i = 0; i < 3; i++) {
-  var first  = this.cells[i].symbol;
-  var second = this.cells[i + 3].symbol;
-  var third  = this.cells[i + 6].symbol;
-
-  //NOTE: If this is the best way to do this I will eat my hat.
-  if ((first === second && (first === symbol || second === symbol))
-    || (second === third && (second === symbol || third === symbol)
-    || (third === first && (third === symbol || first === symbol))) {
-      if (Game.intersection([first, second, third]) !== []) {
-        possibleMoves = Game.intersection([first, second, third]);
-      }
-    }
-}
-
-//Check diagonals:
-var first  = this.cells[4].symbol;
-var second = this.cells[0].symbol;
-var third  = this.cells[8].symbol;
-
-if ((first === second && (first === symbol || second === symbol))
-  || (second === third && (second === symbol || third === symbol)
-  || (third === first && (third === symbol || first === symbol))) {
-    if (Game.intersection([first, second, third]) !== []) {
-      possibleMoves = Game.intersection([first, second, third]);
-    }
   }
 
-var first  = this.cells[4].symbol;
-var second = this.cells[2].symbol;
-var third  = this.cells[6].symbol;
-
-if ((first === second && (first === symbol || second === symbol))
-  || (second === third && (second === symbol || third === symbol)
-  || (third === first && (third === symbol || first === symbol))) {
-    if (Game.intersection([first, second, third]) !== []) {
-      possibleMoves = Game.intersection([first, second, third]);
+  // Win: If the player has two in a row, they can place a third to get three in a row.
+  // Block: If the opponent has two in a row, the player must play the third themselves to block the opponent.
+  //Check horizontals:
+  for (var i = 0; i <= 6; i+=3) {
+    if (possibleMoves !== []) {
+      console.log("found a loss in previous run");
+      break;
     }
+    checkforPair(i, i + 1, i + 2, this.players[1].symbol);
+    if (possibleMoves !== []) {
+      console.log("just found a win");
+      break;
+    }
+    checkforPair(i, i + 1, i + 2, this.players[0].symbol);
   }
 
+  // //Check verticals:
+  // for (var i = 0; i < 3; i++) {
+  //   console.log("found a loss in previous run");
+  //   if (possibleMoves !== []) {
+  //     break;
+  //   }
+  //   checkforPair(i, i + 3, i + 6);
+  // }
 
+  // //Check diagonals:
+  // checkforPair(0,4,8);
+  // checkforPair(2,4,6);
 
-// Fork: Create an opportunity where the player has two threats to win (two non-blocked lines of 2).
-
-//NOTE: Probably skipping this one unless we can find a way to easily describe "forks."
-// Blocking an opponent's fork:
-// Option 1: The player should create two in a row to force the opponent into defending, as long as it doesn't result in them creating a fork. For example, if "X" has a corner, "O" has the center, and "X" has the opposite corner as well, "O" must not play a corner in order to win. (Playing a corner in this scenario creates a fork for "X" to win.)
-// Option 2: If there is a configuration where the opponent can fork, the player should block that fork.
-// Center: A player marks the center. (If it is the first move of the game, playing on a corner gives "O" more opportunities to make a mistake and may therefore be the better choice; however, it makes no difference between perfect players.)
-  if (!this.cells[4].state) {
-    possibleMoves = [4];
-// Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
-  } else if (this.moves[0] === "0" || this.moves[0] === "8"
-        && !(this.moves.includes(8) && this.moves.includes(0))) {
-    possibleMoves = this.intersection([0, 8]);
-  } else if (this.moves[0] === "2" || this.moves[0] === "6"
-        && !(this.moves.includes(2) && this.moves.includes(6))) {
-    possibleMoves = this.intersection([2, 6]);
-// Empty corner: The player plays in a corner square. [0,2,4,8]
-  } else if (frees.includes(0)
-          || frees.includes(2)
-          || frees.includes(4)
-          || frees.includes(8)) {
-    possibleMoves = this.intersection([0,2,6,8]);
-    // Empty side: The player plays in a middle square on any of the 4 sides. [1,3,5,7]
-  } else {
-    possibleMoves = this.intersection([1,3,5,7]);
+  if (possibleMoves === []) {
+    // Fork: Create an opportunity where the player has two threats to win (two non-blocked lines of 2).
+    //NOTE: Probably skipping this one unless we can find a way to easily describe "forks."
+    // Blocking an opponent's fork:
+    // Option 1: The player should create two in a row to force the opponent into defending, as long as it doesn't result in them creating a fork. For example, if "X" has a corner, "O" has the center, and "X" has the opposite corner as well, "O" must not play a corner in order to win. (Playing a corner in this scenario creates a fork for "X" to win.)
+    // Option 2: If there is a configuration where the opponent can fork, the player should block that fork.
+    // Center: A player marks the center. (If it is the first move of the game, playing on a corner gives "O" more opportunities to make a mistake and may therefore be the better choice; however, it makes no difference between perfect players.)
+    if (!this.cells[4].state) {
+      possibleMoves = [4];
+      // Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
+    } else if (this.moves[0] === "0" || this.moves[0] === "8"
+    && !(this.moves.includes(8) && this.moves.includes(0))) {
+      possibleMoves = this.intersection([0, 8]);
+    } else if (this.moves[0] === "2" || this.moves[0] === "6"
+    && !(this.moves.includes(2) && this.moves.includes(6))) {
+      possibleMoves = this.intersection([2, 6]);
+      // Empty corner: The player plays in a corner square. [0,2,4,8]
+    } else if (frees.includes(0)
+    || frees.includes(2)
+    || frees.includes(4)
+    || frees.includes(8)) {
+      possibleMoves = this.intersection([0,2,6,8]);
+      // Empty side: The player plays in a middle square on any of the 4 sides. [1,3,5,7]
+    } else {
+      possibleMoves = this.intersection([1,3,5,7]);
+    }
   }
 
   //Robot randomizes among possibleMoves and chooses a valid id to move into;
@@ -283,7 +267,7 @@ $(function () {
         if (ourGame.players[1].name === "WALL-E") {
           var roboCell = ourGame.cells[ourGame.roboMove()];
         } else if (ourGame.players[1].name === "HAL 9000") {
-          var roboCell = ourGame.cells[ourGame.roboMoveSmarter(this.players[0].symbol)];
+          var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
         }
         roboCell.update(ourGame.currentPlayer.symbol);
         ourGame.moves.shift(roboCell.id);
