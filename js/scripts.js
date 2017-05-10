@@ -1,7 +1,6 @@
 /////////Business logic
 function Player(name, symbol) {
   this.name      = name;
-  this.winStatus = false;
   this.symbol    = symbol;
 }
 
@@ -9,13 +8,37 @@ function Game() {
   this.cells         = [];
   this.players       = [];
   this.currentPlayer = {};
+  this.complete      = false;
 }
 
-Game.prototype.checkForWin = function () {
-  this.cells;
+Game.prototype.checkForWin = function (symbol) {
+  //Checks for horizontal win:
+  for (var i = 0; i <= 6; i+= 3) {
+    if (this.cells[i].symbol === symbol
+      && this.cells[i + 1].symbol === symbol
+      && this.cells[i + 2].symbol === symbol) {
+        this.emphasizeWinners([i, i + 1, i + 2]);
+    }
+  }
+  //Checks for vertical win:
+  for (var i = 0; i < 3; i++) {
+    console.log();
+    if (this.cells[i].symbol === symbol
+      && this.cells[i + 3].symbol === symbol
+      && this.cells[i + 6].symbol === symbol) {
+    this.emphasizeWinners([i, i + 3, i + 6]);
+    }
+  }
+  //checks for diagonal win:
+  if (this.cells[4].symbol === symbol && this.cells[4].symbol === this.cells[0].symbol && this.cells[4].symbol === this.cells[8].symbol) {
+    this.emphasizeWinners([0,4,8]);
+  }
+  if ((this.cells[4].symbol === symbol && this.cells[4].symbol === this.cells[2].symbol && this.cells[4].symbol === this.cells[6].symbol)) {
+    this.emphasizeWinners([2,4,6]);
+  }
 };
 
-Game.prototype.generate = function () {
+Game.prototype.generate = function() {
   var board = this;
   $("td").each(function(idx, ele) {
     var newCell = new Cell(ele.id);
@@ -33,7 +56,7 @@ Game.prototype.changeTurn = function() {
   }
 }
 
-Game.prototype.findCell = function (id) {
+Game.prototype.findCell = function(id) {
   for (var i = 0; i < this.cells.length; i++) {
     if (this.cells[i].id === id) {
       return this.cells[i];
@@ -41,6 +64,12 @@ Game.prototype.findCell = function (id) {
   }
 };
 
+Game.prototype.emphasizeWinners = function(array) {
+  for (var i = 0; i < array.length; i++) {
+    $("#" + this.cells[array[i]].id).addClass("winning");
+  }
+  this.complete = true;
+}
 //NOTE: Alternate method of adding Cells to Board:
 // for (var i = 1; i < 4; i++) {
 //   for (var ii = 1; ii < 4; ii++) {
@@ -80,13 +109,16 @@ $(function () {
   });
 
   $("td").click(function() {
-    var currentCell = ourGame.findCell($(this)[0].id);
-    console.log(currentCell);
-    // if (!currentCell.state) {
-    //   //currentCell.update();
-    // }
-    $(this).text(ourGame.currentPlayer.symbol);
-
-    ourGame.changeTurn();
+    if (!ourGame.complete && ourGame.players.length === 2) {
+      var currentCell = ourGame.findCell($(this)[0].id);
+      if (!currentCell.state) {
+        currentCell.update(ourGame.currentPlayer.symbol);
+        $(this).text(ourGame.currentPlayer.symbol);
+      }
+      ourGame.checkForWin(ourGame.currentPlayer.symbol);
+      ourGame.changeTurn();
+    } else {
+      console.log("Game Over or Too Few Players.");
+    }
   });
 });

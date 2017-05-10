@@ -5,3 +5,24 @@ td {
   width: 230px;
   border: 10px solid black;
 }
+
+.winning {
+  color: green;
+  background-color: yellowgreen;
+}
+
+.top {
+  border-top: none;
+}
+
+.bottom {
+  border-bottom: none;
+}
+
+.left {
+  border-left: none;
+}
+
+.right {
+  border-right: none;
+}
