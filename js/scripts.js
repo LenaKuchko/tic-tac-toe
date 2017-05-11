@@ -105,6 +105,7 @@ Game.prototype.roboMoveSmarter = function () {
   // Win: If the player has two in a row, they can place a third to get three in a row.
   // Block: If the opponent has two in a row, the player must play the third themselves to block the opponent.
   //Check horizontals:
+
   for (var i = 0; i <= 6; i+=3) {
     if (possibleMoves.length > 0) {
       //Break if there's an impending loss.
@@ -119,22 +120,30 @@ Game.prototype.roboMoveSmarter = function () {
   }
 
   //Check verticals:
-  for (var i = 0; i < 3; i++) {
-    if (possibleMoves.length > 0) {
-      //Break if there's an impending loss.
-      break;
+  if (possibleMoves.length === 0) {
+    for (var i = 0; i < 3; i++) {
+      if (possibleMoves.length > 0) {
+        //Break if there's an impending loss.
+        break;
+      }
+      checkforPair(i, i + 3, i + 6, this.players[1].symbol);
+      if (possibleMoves.length > 0) {
+        //Break if there's an impending win.
+        break;
+      }
+      checkforPair(i, i + 3, i + 6, this.players[0].symbol);
     }
-    checkforPair(i, i + 3, i + 6, this.players[1].symbol);
-    if (possibleMoves.length > 0) {
-      //Break if there's an impending win.
-      break;
-    }
-    checkforPair(i, i + 3, i + 6, this.players[0].symbol);
   }
 
   //Check diagonals:
-  checkforPair(0,4,8,this.players[1].symbol);
-  checkforPair(2,4,6,this.players[1].symbol);
+  debugger;
+  if (possibleMoves.length === 0) {
+    checkforPair(0,4,8,this.players[1].symbol);
+  }
+
+  if (possibleMoves.length === 0) {
+    checkforPair(2,4,6,this.players[1].symbol);
+  }
 
   if (possibleMoves.length === 0) {
     console.log("Entered main RMS if.");
@@ -148,10 +157,10 @@ Game.prototype.roboMoveSmarter = function () {
       possibleMoves = [4];
       // Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
     } else if ((this.moves[0] === "0" || this.moves[0] === "8")
-    && !(this.moves.includes(8) && this.moves.includes(0))) {
+    && !(this.moves.includes("8") && this.moves.includes("0"))) {
       possibleMoves = this.intersection([0, 8]);
     } else if ((this.moves[0] === "2" || this.moves[0] === "6")
-    && !(this.moves.includes(2) && this.moves.includes(6))) {
+    && !(this.moves.includes("2") && this.moves.includes("6"))) {
       possibleMoves = this.intersection([2, 6]);
       // Empty corner: The player plays in a corner square. [0,2,4,8]
     } else if (frees.includes(0)
@@ -227,6 +236,7 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
   }
 
   $("form").hide();
+  $(".robobuttons").hide();
   var start = Math.floor(Math.random() * 2);
   this.currentPlayer = this.players[start];
   alert(this.currentPlayer.name + ", you're going first!");
