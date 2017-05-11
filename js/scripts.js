@@ -132,13 +132,12 @@ Game.prototype.roboMoveSmarter = function () {
     checkforPair(i, i + 3, i + 6, this.players[0].symbol);
   }
 
-  // //Check diagonals:
-  // checkforPair(0,4,8);
-  // checkforPair(2,4,6);
+  //Check diagonals:
+  checkforPair(0,4,8,this.players[1].symbol);
+  checkforPair(2,4,6,this.players[1].symbol);
 
   if (possibleMoves.length === 0) {
-    debugger;
-    console.log("into main RMS if block:\n this.moves = " + this.moves);
+    console.log("Entered main RMS if.");
     // Fork: Create an opportunity where the player has two threats to win (two non-blocked lines of 2).
     //NOTE: Probably skipping this one unless we can find a way to easily describe "forks."
     // Blocking an opponent's fork:
@@ -253,21 +252,21 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
         currentCell.update(ourGame.currentPlayer.symbol);
         ourGame.moves.unshift(currentCell.id);
         $(this).text(ourGame.currentPlayer.symbol);
-      }
-      ourGame.checkForWin(ourGame.currentPlayer.symbol);
-      ourGame.changeTurn();
-      //TODO: DRY this, maybe?
-      if (ourGame.ai && !ourGame.complete && ourGame.freeCells().state) {
-        if (ourGame.players[1].name === "WALL-E") {
-          var roboCell = ourGame.cells[ourGame.roboMove()];
-        } else if (ourGame.players[1].name === "HAL 9000") {
-          var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
-        }
-        roboCell.update(ourGame.currentPlayer.symbol);
-        ourGame.moves.unshift(roboCell.id);
-        $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
         ourGame.checkForWin(ourGame.currentPlayer.symbol);
         ourGame.changeTurn();
+      //TODO: DRY this, maybe?
+        if (ourGame.ai && !ourGame.complete && ourGame.freeCells().state) {
+          if (ourGame.players[1].name === "WALL-E") {
+            var roboCell = ourGame.cells[ourGame.roboMove()];
+          } else if (ourGame.players[1].name === "HAL 9000") {
+            var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
+          }
+          roboCell.update(ourGame.currentPlayer.symbol);
+          ourGame.moves.unshift(roboCell.id);
+          $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
+          ourGame.checkForWin(ourGame.currentPlayer.symbol);
+          ourGame.changeTurn();
+        }
       }
     } else {
       console.log("Game Over or Too Few Players.");
