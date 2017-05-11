@@ -24,7 +24,6 @@ Game.prototype.checkForWin = function (symbol) {
   }
   //Checks for vertical win:
   for (var i = 0; i < 3; i++) {
-    console.log();
     if (this.cells[i].symbol === symbol
       && this.cells[i + 3].symbol === symbol
       && this.cells[i + 6].symbol === symbol) {
@@ -69,6 +68,7 @@ Game.prototype.emphasizeWinners = function(array) {
     $("#" + array[i]).addClass("winning");
   }
   this.complete = true;
+  this.announce("Congratulations, " + this.currentPlayer.name + ", you've won!");
 }
 
 Game.prototype.roboMove = function () {
@@ -136,7 +136,6 @@ Game.prototype.roboMoveSmarter = function () {
   }
 
   //Check diagonals:
-  debugger;
   if (possibleMoves.length === 0) {
     checkforPair(0,4,8,this.players[1].symbol);
   }
@@ -235,18 +234,43 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
     this.ai = true;
   }
 
+
   $("form").slideUp();
   var start = Math.floor(Math.random() * 2);
   this.currentPlayer = this.players[start];
+  this.announce(this.currentPlayer.name + ", you're going first!");
+}
+
+Game.prototype.announce = function (message) {
+  $("#alerts p").text(message);
   $("#alerts").slideDown({
     "done" : function() {$("#alerts").delay(1250).slideUp({"duration" : 800, "easing" : "linear"})}
   });
-  $("#alerts p").text(this.currentPlayer.name + ", you're going first!");
+};
+
+Game.prototype.resetState = function () {
+  this.cells         = [];
+  this.players       = [];
+  this.currentPlayer = {};
+  this.complete      = false;
+  this.ai            = false;
+  this.moves         = [];
 }
 
   $("form").submit(function(event) {
     event.preventDefault();
     ourGame.initGame($("input[name=player2]").val(), $("input[name=player2-symbol]").val());
+  });
+
+  $("#reset button").click(function() {
+    ourGame.resetState();
+    $("form").show();
+    $("#reset").hide();
+    $("td").each(function(idx, ele) {
+      $(ele).text("");
+      $(ele).removeClass("winning");
+    });
+    ourGame.generate();
   });
 
   $("button[name=vs-computer]").click(function() {
@@ -285,6 +309,7 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
         currentCell.update(ourGame.currentPlayer.symbol);
         ourGame.moves.unshift(currentCell.id);
         $(this).text(ourGame.currentPlayer.symbol);
+        $(this).boxfit({"width" : "180px"});
         ourGame.checkForWin(ourGame.currentPlayer.symbol);
         ourGame.changeTurn();
       //TODO: DRY this, maybe?
@@ -300,11 +325,17 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
             $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
             ourGame.checkForWin(ourGame.currentPlayer.symbol);
             ourGame.changeTurn();
+            if (ourGame.complete) {
+                $("#reset").show();
+            }
           }, 300);
         }
       }
     } else {
-      console.log("Game Over or Too Few Players.");
+      console.log("Too Few Players.");
+    }
+    if (ourGame.complete) {
+        $("#reset").show();
     }
   });
 });

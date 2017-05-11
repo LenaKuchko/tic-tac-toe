@@ -1,4 +1,4 @@
-
+/* Color Scheme by https://coolors.co/e8e5de-302720-689689-b2e6d4-83e8ba*/
 body {
   background-color: #504136;
   color: #E8DDC0;
@@ -11,15 +11,16 @@ label {
   font-size: 22px;
 }
 
-.jumbotron h1 {
-  font-size: 80px;
+#jumbotron h1 {
+  font-size: 140px;
 }
 
-.jumbotron {
+#jumbotron {
   font-family: 'Lobster', cursive;
   text-align: center;
   color: #A49E8D;
   background-color: #302720;
+  margin-bottom: 10px;
 }
 
 table {

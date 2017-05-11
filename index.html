@@ -7,14 +7,19 @@
     <link href="css/styles.css" rel="stylesheet" type="text/css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="js/jquery.boxfit.js" type="text/javascript"></script>
     <script src="js/scripts.js" type="text/javascript"></script>
     <title>Tic Tac Toe</title>
   </head>
   <body>
-    <div class="container">
-      <div class="jumbotron">
-        <h1>tic - tac - toe</h1>
+    <div class="container-fluid">
+      <div id="jumbotron" class="row">
+        <div class="header col-md-12">
+          <h1>tic - tac - toe</h1>
+        </div>
       </div>
+    </div>
+    <div class="container">
       <form>
         <div class="row">
           <div class="form-group col-xs-6">
@@ -33,11 +38,14 @@
               <input class="form-control" type="text" name="player2" value="Olena">
               <input class="form-control hidden" type="text" name="player2-symbol" value="O">
             </div>
-            <button class="btn-lg robobuttons" type="button" name="vs-computer">Play against a Machine</button>
-            <button class="btn-lg robobuttons" type="button" name="vs-better-computer">Play against a Smarter Machine</button>
+            <button class="btn-lg" type="button" name="vs-computer">Play against a Machine</button>
+            <button class="btn-lg" type="button" name="vs-better-computer">Play against a Smarter Machine</button>
           </div>
         </div>
       </form>
+      <div id="reset" class="row myHide">
+        <button class="btn-lg" type="button" name="button">Play Again?</button>
+      </div>
       <div id="alerts" class="row well myHide">
         <p></p>
       </div>
@@ -60,4 +68,6 @@
         </table>
     </div>
   </body>
+<!-- http://stackoverflow.com/questions/4165836/javascript-scale-text-to-fit-in-fixed-div -->
+
 </html>
