@@ -309,7 +309,6 @@ Game.prototype.resetState = function () {
         currentCell.update(ourGame.currentPlayer.symbol);
         ourGame.moves.unshift(currentCell.id);
         $(this).text(ourGame.currentPlayer.symbol);
-        $(this).boxfit({"width" : "180px"});
         ourGame.checkForWin(ourGame.currentPlayer.symbol);
         ourGame.changeTurn();
       //TODO: DRY this, maybe?

@@ -54,6 +54,11 @@ td {
   color: #83E8BA;
 }
 
+td div {
+  height: 278px;
+  width: 278px;
+}
+
 .winning {
   color: #E8E5DE;
   background-color: #689689;
