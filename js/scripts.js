@@ -106,34 +106,39 @@ Game.prototype.roboMoveSmarter = function () {
   // Block: If the opponent has two in a row, the player must play the third themselves to block the opponent.
   //Check horizontals:
   for (var i = 0; i <= 6; i+=3) {
-    // debugger;
     if (possibleMoves.length > 0) {
-      console.log("found a looming loss in previous run");
+      //Break if there's an impending loss.
       break;
     }
     checkforPair(i, i + 1, i + 2, this.players[1].symbol);
     if (possibleMoves.length > 0) {
-      console.log("just found a win");
+      //Break if there's an impending win.
       break;
     }
     checkforPair(i, i + 1, i + 2, this.players[0].symbol);
   }
 
-  // //Check verticals:
-  // for (var i = 0; i < 3; i++) {
-  //   console.log("found a loss in previous run");
-  //   if (possibleMoves !== []) {
-  //     break;
-  //   }
-  //   checkforPair(i, i + 3, i + 6);
-  // }
+  //Check verticals:
+  for (var i = 0; i < 3; i++) {
+    if (possibleMoves.length > 0) {
+      //Break if there's an impending loss.
+      break;
+    }
+    checkforPair(i, i + 3, i + 6, this.players[1].symbol);
+    if (possibleMoves.length > 0) {
+      //Break if there's an impending win.
+      break;
+    }
+    checkforPair(i, i + 3, i + 6, this.players[0].symbol);
+  }
 
   // //Check diagonals:
   // checkforPair(0,4,8);
   // checkforPair(2,4,6);
 
   if (possibleMoves.length === 0) {
-    console.log("into main RMS if block:");
+    debugger;
+    console.log("into main RMS if block:\n this.moves = " + this.moves);
     // Fork: Create an opportunity where the player has two threats to win (two non-blocked lines of 2).
     //NOTE: Probably skipping this one unless we can find a way to easily describe "forks."
     // Blocking an opponent's fork:
@@ -143,10 +148,10 @@ Game.prototype.roboMoveSmarter = function () {
     if (!this.cells[4].state) {
       possibleMoves = [4];
       // Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
-    } else if (this.moves[0] === "0" || this.moves[0] === "8"
+    } else if ((this.moves[0] === "0" || this.moves[0] === "8")
     && !(this.moves.includes(8) && this.moves.includes(0))) {
       possibleMoves = this.intersection([0, 8]);
-    } else if (this.moves[0] === "2" || this.moves[0] === "6"
+    } else if ((this.moves[0] === "2" || this.moves[0] === "6")
     && !(this.moves.includes(2) && this.moves.includes(6))) {
       possibleMoves = this.intersection([2, 6]);
       // Empty corner: The player plays in a corner square. [0,2,4,8]
@@ -224,7 +229,7 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
 
   $("form").hide();
   //TODO: Randomize which player goes first
-  alert(playerOne.name + ", you're going first!");
+  // alert(playerOne.name + ", you're going first!");
   this.currentPlayer = playerOne;
 }
 
@@ -246,7 +251,7 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
       var currentCell = ourGame.findCell($(this)[0].id);
       if (!currentCell.state) {
         currentCell.update(ourGame.currentPlayer.symbol);
-        ourGame.moves.shift(currentCell.id);
+        ourGame.moves.unshift(currentCell.id);
         $(this).text(ourGame.currentPlayer.symbol);
       }
       ourGame.checkForWin(ourGame.currentPlayer.symbol);
@@ -259,7 +264,7 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
           var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
         }
         roboCell.update(ourGame.currentPlayer.symbol);
-        ourGame.moves.shift(roboCell.id);
+        ourGame.moves.unshift(roboCell.id);
         $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
         ourGame.checkForWin(ourGame.currentPlayer.symbol);
         ourGame.changeTurn();
