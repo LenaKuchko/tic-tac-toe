@@ -235,11 +235,13 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
     this.ai = true;
   }
 
-  $("form").hide();
-  $(".robobuttons").hide();
+  $("form").slideUp();
   var start = Math.floor(Math.random() * 2);
   this.currentPlayer = this.players[start];
-  alert(this.currentPlayer.name + ", you're going first!");
+  $("#alerts").slideDown({
+    "done" : function() {$("#alerts").delay(1250).slideUp({"duration" : 800, "easing" : "linear"})}
+  });
+  $("#alerts p").text(this.currentPlayer.name + ", you're going first!");
 }
 
   $("form").submit(function(event) {
@@ -249,27 +251,31 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
 
   $("button[name=vs-computer]").click(function() {
     ourGame.initGame("WALL-E", "[0_0]");
-    if (ourGame.currentPlayer.name === "WALL-E") {
-      var roboCell = ourGame.cells[ourGame.roboMove()];
-      roboCell.update(ourGame.currentPlayer.symbol);
-      ourGame.moves.unshift(roboCell.id);
-      $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
-      ourGame.checkForWin(ourGame.currentPlayer.symbol);
-      ourGame.changeTurn();
-    }
+    setTimeout(function() {
+      if (ourGame.currentPlayer.name === "WALL-E") {
+        var roboCell = ourGame.cells[ourGame.roboMove()];
+        roboCell.update(ourGame.currentPlayer.symbol);
+        ourGame.moves.unshift(roboCell.id);
+        $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
+        ourGame.checkForWin(ourGame.currentPlayer.symbol);
+        ourGame.changeTurn();
+      }
+    }, 1250);
   });
 
   $("button[name=vs-better-computer]").click(function() {
     ourGame.initGame("HAL 9000", "(O)");
     // if currentPlayer == computer, play an initial turn for the computer
-    if (ourGame.currentPlayer.name === "HAL 9000") {
-      var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
-      roboCell.update(ourGame.currentPlayer.symbol);
-      ourGame.moves.unshift(roboCell.id);
-      $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
-      ourGame.checkForWin(ourGame.currentPlayer.symbol);
-      ourGame.changeTurn();
-    }
+    setTimeout(function() {
+      if (ourGame.currentPlayer.name === "HAL 9000") {
+        var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
+        roboCell.update(ourGame.currentPlayer.symbol);
+        ourGame.moves.unshift(roboCell.id);
+        $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
+        ourGame.checkForWin(ourGame.currentPlayer.symbol);
+        ourGame.changeTurn();
+      }
+    }, 1250);
   });
 
   $("td").click(function() {
@@ -283,16 +289,18 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
         ourGame.changeTurn();
       //TODO: DRY this, maybe?
         if (ourGame.ai && !ourGame.complete && ourGame.freeCells().state) {
-          if (ourGame.players[1].name === "WALL-E") {
-            var roboCell = ourGame.cells[ourGame.roboMove()];
-          } else if (ourGame.players[1].name === "HAL 9000") {
-            var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
-          }
-          roboCell.update(ourGame.currentPlayer.symbol);
-          ourGame.moves.unshift(roboCell.id);
-          $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
-          ourGame.checkForWin(ourGame.currentPlayer.symbol);
-          ourGame.changeTurn();
+          setTimeout(function() {
+            if (ourGame.players[1].name === "WALL-E") {
+              var roboCell = ourGame.cells[ourGame.roboMove()];
+            } else if (ourGame.players[1].name === "HAL 9000") {
+              var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
+            }
+            roboCell.update(ourGame.currentPlayer.symbol);
+            ourGame.moves.unshift(roboCell.id);
+            $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
+            ourGame.checkForWin(ourGame.currentPlayer.symbol);
+            ourGame.changeTurn();
+          }, 300);
         }
       }
     } else {

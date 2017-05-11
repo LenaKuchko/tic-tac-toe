@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Lobster|PT+Serif" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link href="css/styles.css" rel="stylesheet" type="text/css">
 
@@ -11,20 +12,34 @@
   </head>
   <body>
     <div class="container">
+      <div class="jumbotron">
+        <h1>tic - tac - toe</h1>
+      </div>
       <form>
-        <label for="player1">Player One:</label>
-        <input type="text" name="player1" value="Charles">
-        <label for="player1-symbol"></label>
-        <input type="text" name="player1-symbol" value="X">
-        <label for="player2">Player Two:</label>
-        <input type="text" name="player2" value="Olena">
-        <label for="player2-symbol"></label>
-        <input type="text" name="player2-symbol" value="O">
-        <button type="submit">Let's Play!</button>
+        <div class="row">
+          <div class="form-group col-xs-6">
+            <label for="player1">Player One</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-addon">X</span>
+              <input class="form-control" type="text" name="player1" value="Charles">
+              <input class="form-control hidden" type="text" name="player1-symbol" value="X">
+            </div>
+            <button class="btn-lg" type="submit">Let's Play!</button>
+          </div>
+          <div class="form-group col-xs-6">
+            <label for="player2">Player Two</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-addon">O</span>
+              <input class="form-control" type="text" name="player2" value="Olena">
+              <input class="form-control hidden" type="text" name="player2-symbol" value="O">
+            </div>
+            <button class="btn-lg robobuttons" type="button" name="vs-computer">Play against a Machine</button>
+            <button class="btn-lg robobuttons" type="button" name="vs-better-computer">Play against a Smarter Machine</button>
+          </div>
+        </div>
       </form>
-      <div class="robobuttons">
-        <button type="button" name="vs-computer">Play against a Machine</button>
-        <button type="button" name="vs-better-computer">Play against a Smarter Machine</button>
+      <div id="alerts" class="row well myHide">
+        <p></p>
       </div>
         <table>
           <tr>
