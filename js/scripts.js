@@ -85,18 +85,19 @@ Game.prototype.roboMove = function () {
 Game.prototype.roboMoveSmarter = function () {
   var possibleMoves = [];
   var frees = this.freeCells().freeCellArray;
+  var game = this;
 
   function checkforPair(a, b, c, symbol) {
-    var first  = this.cells[a].symbol;
-    var second = this.cells[b].symbol;
-    var third  = this.cells[c].symbol;
+    var first  = game.cells[a].symbol;
+    var second = game.cells[b].symbol;
+    var third  = game.cells[c].symbol;
 
     //NOTE: If this is the best way to do this I will eat my hat.
     if ((first === second && (first === symbol || second === symbol))
       || (second === third && (second === symbol || third === symbol))
       || (third === first && (third === symbol || first === symbol))) {
-        if (Game.intersection([first, second, third]) !== []) {
-          possibleMoves = Game.intersection([first, second, third]);
+        if (game.intersection([first, second, third]) !== []) {
+          possibleMoves = game.intersection([a, b, c]);
         }
       }
   }
@@ -106,12 +107,12 @@ Game.prototype.roboMoveSmarter = function () {
   //Check horizontals:
   for (var i = 0; i <= 6; i+=3) {
     // debugger;
-    if (possibleMoves !== []) {
-      console.log("found a loss in previous run");
+    if (possibleMoves.length > 0) {
+      console.log("found a looming loss in previous run");
       break;
     }
     checkforPair(i, i + 1, i + 2, this.players[1].symbol);
-    if (possibleMoves !== []) {
+    if (possibleMoves.length > 0) {
       console.log("just found a win");
       break;
     }
@@ -131,7 +132,8 @@ Game.prototype.roboMoveSmarter = function () {
   // checkforPair(0,4,8);
   // checkforPair(2,4,6);
 
-  if (possibleMoves === []) {
+  if (possibleMoves.length === 0) {
+    console.log("into main RMS if block:");
     // Fork: Create an opportunity where the player has two threats to win (two non-blocked lines of 2).
     //NOTE: Probably skipping this one unless we can find a way to easily describe "forks."
     // Blocking an opponent's fork:
