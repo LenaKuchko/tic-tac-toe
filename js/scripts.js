@@ -13,7 +13,6 @@ function Game() {
   this.moves         = [];
 }
 
-
 Game.prototype.checkForWin = function (symbol) {
   //Checks for horizontal win:
   for (var i = 0; i <= 6; i+= 3) {
@@ -74,7 +73,6 @@ Game.prototype.emphasizeWinners = function(array) {
 
 Game.prototype.roboMove = function () {
   var index = Math.floor(Math.random() * (this.freeCells().freeCellArray.length - 1));
-  console.log(this.freeCells().freeCellArray[index]);
   return this.freeCells().freeCellArray[index];
 };
 //NOTE: Alternate method of adding Cells to Board:
@@ -107,6 +105,7 @@ Game.prototype.roboMoveSmarter = function () {
   // Block: If the opponent has two in a row, the player must play the third themselves to block the opponent.
   //Check horizontals:
   for (var i = 0; i <= 6; i+=3) {
+    // debugger;
     if (possibleMoves !== []) {
       console.log("found a loss in previous run");
       break;
@@ -211,45 +210,33 @@ $(function () {
   var ourGame = new Game();
   ourGame.generate();
 
+Game.prototype.initGame = function (playerName, playerSymbol) {
+  var playerOne = new Player($("input[name=player1]").val(), $("input[name=player1-symbol]").val());
+  var playerTwo = new Player(playerName, playerSymbol);
+  this.players.push(playerOne);
+  this.players.push(playerTwo);
+
+  if (playerTwo.name === "WALL-E" || playerTwo.name === "HAL 9000") {
+    this.ai = true;
+  }
+
+  $("form").hide();
+  //TODO: Randomize which player goes first
+  alert(playerOne.name + ", you're going first!");
+  this.currentPlayer = playerOne;
+}
+
   $("form").submit(function(event) {
     event.preventDefault();
-
-    //NOTE: I think the next seven lines should probably become part of a gameInit function.
-    var playerOne = new Player($("input[name=player1]").val(), $("input[name=player1-symbol]").val());
-    var playerTwo = new Player($("input[name=player2]").val(), $("input[name=player2-symbol]").val());
-    ourGame.players.push(playerOne);
-    ourGame.players.push(playerTwo);
-
-    $("form").hide();
-    //TODO: Randomize which player goes first
-    alert(playerOne.name + ", you're going first!");
-    ourGame.currentPlayer = playerOne;
+    ourGame.initGame($("input[name=player2]").val(), $("input[name=player2-symbol]").val());
   });
 
   $("button[name=vs-computer]").click(function() {
-    var playerOne = new Player($("input[name=player1]").val(), $("input[name=player1-symbol]").val());
-    var playerTwo = new Player("WALL-E", "[0_0]");
-    ourGame.players.push(playerOne);
-    ourGame.players.push(playerTwo);
-    ourGame.ai = true;
-
-    $("form").hide();
-    //TODO: Randomize which player goes first
-    alert(playerOne.name + ", you're going first!");
-    ourGame.currentPlayer = playerOne;
+    ourGame.initGame("WALL-E", "[0_0]");
   });
 
   $("button[name=vs-better-computer]").click(function() {
-    var playerOne = new Player($("input[name=player1]").val(), $("input[name=player1-symbol]").val());
-    var playerTwo = new Player("HAL 9000", "(O)");
-    ourGame.players.push(playerOne);
-    ourGame.players.push(playerTwo);
-    ourGame.ai = true;
-
-    $("form").hide();
-    //TODO: Randomize which player goes first
-    alert(playerOne.name + ", you're going first!");
-    ourGame.currentPlayer = playerOne;
+    ourGame.initGame("HAL 9000", "(O)");
   });
 
   $("td").click(function() {
