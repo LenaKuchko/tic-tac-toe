@@ -227,9 +227,9 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
   }
 
   $("form").hide();
-  //TODO: Randomize which player goes first
-  // alert(playerOne.name + ", you're going first!");
-  this.currentPlayer = playerOne;
+  var start = Math.floor(Math.random() * 2);
+  this.currentPlayer = this.players[start];
+  alert(this.currentPlayer.name + ", you're going first!");
 }
 
   $("form").submit(function(event) {
@@ -239,10 +239,27 @@ Game.prototype.initGame = function (playerName, playerSymbol) {
 
   $("button[name=vs-computer]").click(function() {
     ourGame.initGame("WALL-E", "[0_0]");
+    if (ourGame.currentPlayer.name === "WALL-E") {
+      var roboCell = ourGame.cells[ourGame.roboMove()];
+      roboCell.update(ourGame.currentPlayer.symbol);
+      ourGame.moves.unshift(roboCell.id);
+      $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
+      ourGame.checkForWin(ourGame.currentPlayer.symbol);
+      ourGame.changeTurn();
+    }
   });
 
   $("button[name=vs-better-computer]").click(function() {
     ourGame.initGame("HAL 9000", "(O)");
+    // if currentPlayer == computer, play an initial turn for the computer
+    if (ourGame.currentPlayer.name === "HAL 9000") {
+      var roboCell = ourGame.cells[ourGame.roboMoveSmarter()];
+      roboCell.update(ourGame.currentPlayer.symbol);
+      ourGame.moves.unshift(roboCell.id);
+      $("#" + roboCell.id).text(ourGame.currentPlayer.symbol);
+      ourGame.checkForWin(ourGame.currentPlayer.symbol);
+      ourGame.changeTurn();
+    }
   });
 
   $("td").click(function() {
